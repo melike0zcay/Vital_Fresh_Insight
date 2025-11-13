@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akıllı Gıda Analizi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --background-color: #f0f2f5;
+            --text-color: #2c3e50;
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background: linear-gradient(135deg, #a8e6cf 0%, #1abc9c 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Dalga Efekti */
+        .wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.2" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+            background-size: 1440px 100px;
+            animation: wave 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes wave {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1440px; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+            animation: fadeUp 0.8s ease-out;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .upload-box, .info-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .upload-box:hover, .info-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .drop-zone {
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .drop-zone:hover .icon {
+            transform: scale(1.1);
+        }
+
+        .drop-zone__prompt {
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .analyze-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .analyze-btn:hover::after {
+            left: 100%;
+        }
+
+        .info-section h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .steps {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateX(10px);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Yeni eklenen animasyonlar */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive düzenlemeler */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-box, .info-section {
+                padding: 1.5rem;
+            }
+
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Yeni bileşenler için stiller */
+        .history-section, .tips-section, .recycling-section, .stats-section, .nutrition-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .history-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .history-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .history-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .history-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card-info {
+            padding: 1rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status.fresh {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .tip-container, .recycling-options, .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .tip-card, .option, .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .tip-card:hover, .option:hover, .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .nutrition-info {
+            margin-top: 1rem;
+        }
+
+        .nutrition-bar {
+            margin-bottom: 1rem;
+        }
+
+        .progress {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: width 0.3s ease;
+        }
+
+        /* Yeni nav menü */
+        .info-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .info-tab {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .info-tab.active {
+            background: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .info-content {
+            margin-bottom: 2rem;
+        }
+
+        .info-panel {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .info-panel.active {
+            display: block;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .info-card h4 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive düzenlemeler için */
+        @media (max-width: 768px) {
+            .info-nav {
+                flex-direction: column;
+                padding: 0 1rem;
+            }
+            
+            .info-tab {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Ana navigasyon menüsü için stiller */
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .main-nav .nav-tab {
+            background: var(--primary-color);
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .main-nav .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Responsive düzenlemeler */
+        @media (max-width: 768px) {
+            .main-nav {
+                flex-direction: column;
+                padding: 0 1rem;
+                gap: 1rem;
+            }
+            
+            .nav-tab {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Gıda Analizi paneli için stiller */
+        .analysis-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .drop-zone {
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .drop-zone .icon {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .drop-zone:hover .icon {
+            transform: scale(1.1);
+        }
+
+        .drop-zone__prompt {
+            color: white;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            display: block;
+        }
+
+        .drop-zone__input {
+            display: none;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .how-it-works {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .how-it-works h4 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateX(10px);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .step-content h5 {
+            color: white;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-content p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive düzenlemeler */
+        @media (max-width: 768px) {
+            .analysis-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .step-content {
+                text-align: center;
+            }
+            
+            .step-content h5 {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wave"></div>
+    <div class="container">
+        <header class="pulse">
+            <h1><i class="fas fa-leaf"></i> Akıllı Gıda Analizi</h1>
+            <p class="subtitle">Gıdalarınızın tazeliğini yapay zeka ile kontrol edin</p>
+        </header>
+
+        <!-- Direkt bilgilendirme butonları -->
+        <nav class="info-nav">
+            <button class="info-tab active" data-tab="food-waste">
+                <i class="fas fa-apple-alt"></i> Gıda İsrafı
+            </button>
+            <button class="info-tab" data-tab="recycling">
+                <i class="fas fa-recycle"></i> Geri Dönüşüm
+            </button>
+            <button class="info-tab" data-tab="storage">
+                <i class="fas fa-box"></i> Saklama Yöntemleri
+            </button>
+            <button class="info-tab" data-tab="analysis">
+                <i class="fas fa-camera"></i> Gıda Analizi
+            </button>
+        </nav>
+
+        <!-- Info panelleri -->
+        <div class="info-content">
+            <!-- Gıda İsrafı paneli - Güncellendi -->
+            <div class="info-panel active" id="food-waste">
+                <h3>Gıda İsrafını Önleme</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <i class="fas fa-chart-pie"></i>
+                        <h4>Dünyada Gıda İsrafı</h4>
+                        <p>Her yıl üretilen gıdaların üçte biri (yaklaşık 1.3 milyar ton) israf ediliyor. Bu miktar, dünya çapında açlığı önleyebilecek düzeyde.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-shopping-basket"></i>
+                        <h4>Alışveriş Önerileri</h4>
+                        <p>Alışverişe liste ile gidin, ihtiyacınız kadar alın. "İki al bir öde" gibi kampanyalarda sadece tüketebileceğiniz miktarı tercih edin.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-utensils"></i>
+                        <h4>Porsiyon Kontrolü</h4>
+                        <p>Küçük porsiyonlarla başlayın, gerekirse tekrar alın. Restoranlarda büyük porsiyonları paylaşın veya artan yemeği paket yapın.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h4>Planlı Tüketim</h4>
+                        <p>Son kullanma tarihi yaklaşan ürünleri öne koyun. Haftalık yemek planı yapın ve artanları değerlendirin.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-temperature-low"></i>
+                        <h4>Doğru Saklama</h4>
+                        <p>Gıdaları uygun sıcaklıkta saklayın. Buzdolabınızı düzenli kontrol edin ve 4°C'nin altında tutun.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h4>Fazla Gıdaları Değerlendirin</h4>
+                        <p>Tüketemeyeceğiniz gıdaları ihtiyaç sahiplerine ulaştırın veya komşularınızla paylaşın.</p>
+                    </div>
+                </div>
+
+                <!-- İstatistik bölümü -->
+                <div class="stats-section">
+                    <h3>Gıda İsrafı İstatistikleri</h3>
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-number">1/3</div>
+                            <p>Dünyada üretilen gıdaların israf oranı</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">93M</div>
+                            <p>Türkiye'de yıllık gıda israfı (ton)</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">214</div>
+                            <p>Kişi başı yıllık gıda israfı (kg)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pratik öneriler -->
+                <div class="tips-section">
+                    <h3>Pratik Öneriler</h3>
+                    <div class="tip-container">
+                        <div class="tip-card">
+                            <i class="fas fa-list-check"></i>
+                            <h4>Alışveriş Listesi</h4>
+                            <p>Her alışverişten önce dolabınızı kontrol edin ve liste yapın.</p>
+                        </div>
+                        <div class="tip-card">
+                            <i class="fas fa-box-archive"></i>
+                            <h4>Akıllı Depolama</h4>
+                            <p>Eski ürünleri öne, yenileri arkaya koyun.</p>
+                        </div>
+                        <div class="tip-card">
+                            <i class="fas fa-plate-wheat"></i>
+                            <h4>Artan Yemekler</h4>
+                            <p>Artan yemekleri farklı tariflerde değerlendirin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geri dönüşüm paneli -->
+            <div class="info-panel" id="recycling">
+                <h3>Gıda Geri Dönüşüm Rehberi</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <i class="fas fa-seedling"></i>
+                        <h4>Kompost Yapımı</h4>
+                        <p>Meyve ve sebze atıklarını, kahve telvesini ve yumurta kabuklarını kompost yaparak bahçeniz için doğal gübre elde edebilirsiniz.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-utensils"></i>
+                        <h4>Yemek Artıkları</h4>
+                        <p>Bayat ekmekleri galeta unu yapabilir, sebze kabuklarından çorba suyu hazırlayabilirsiniz.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h4>Hayvan Barınakları</h4>
+                        <p>Tüketilmemiş ve bozulmamış gıdaları yerel hayvan barınaklarına bağışlayarak değerlendirebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Saklama yöntemleri paneli -->
+            <div class="info-panel" id="storage">
+                <h3>Doğru Saklama Yöntemleri</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <i class="fas fa-temperature-low"></i>
+                        <h4>Buzdolabı Düzeni</h4>
+                        <p>Yeşillikleri nemli kağıt havluya sararak, meyveleri ayrı çekmecelerde ve mantarları kağıt poşette saklayın. İdeal sıcaklık 1-4°C arasıdır.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-carrot"></i>
+                        <h4>Sebzeler İçin İpuçları</h4>
+                        <p>Havuç, kereviz gibi kök sebzeleri nemli kumda, soğan ve sarımsağı serin ve karanlık ortamda, patatesleri ışık almayan yerde saklayın.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-apple-alt"></i>
+                        <h4>Meyveler İçin İpuçları</h4>
+                        <p>Olgun meyveleri diğerlerinden ayırın. Muzları diğer meyvelerden uzak tutun. Çilekleri yıkamadan saklayın ve tüketmeden hemen önce yıkayın.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-bread-slice"></i>
+                        <h4>Kuru Gıdalar</h4>
+                        <p>Ekmek, kuruyemiş ve tahılları hava almayan kaplarda, serin ve kuru ortamda saklayın. Ekmekleri buzdolabında saklamaktan kaçının.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gıda Analizi paneli -->
+            <div class="upload-section">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="drop-zone">
+                        <i class="fas fa-cloud-upload-alt icon"></i>
+                        <span class="drop-zone__prompt">Fotoğraf yüklemek için tıklayın veya sürükleyin</span>
+                        <input type="file" name="file" class="drop-zone__input" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="analyze-btn">
+                        <i class="fas fa-search"></i> Analiz Et
+                    </button>
+                </form>
+            </div>
+            
+
+                    <!-- Sağ taraf - Nasıl çalışır -->
+                    <div class="how-it-works">
+                        <h4><i class="fas fa-question-circle"></i> Nasıl Çalışır?</h4>
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h5><i class="fas fa-camera"></i> Fotoğraf Yükleyin</h5>
+                                    <p>Analiz etmek istediğiniz gıdanın net bir fotoğrafını yükleyin</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h5><i class="fas fa-robot"></i> Yapay Zeka Analizi</h5>
+                                    <p>Yapay zeka teknolojimiz gıdanızın tazelik durumunu analiz eder</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h5><i class="fas fa-check-circle"></i> Sonucu Görün</h5>
+                                    <p>Saniyeler içinde detaylı analiz sonucunu alın</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mevcut tab kontrolü kodu
+        const infoTabs = document.querySelectorAll('.info-tab');
+        const infoPanels = document.querySelectorAll('.info-panel');
+        
+        infoTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                infoTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const targetPanel = document.getElementById(tab.dataset.tab);
+                infoPanels.forEach(panel => panel.classList.remove('active'));
+                targetPanel.classList.add('active');
+            });
+        });
+
+        // Yeni ana navigasyon kontrolü
+        const mainTabs = document.querySelectorAll('.nav-tab');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        mainTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                mainTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const targetSection = document.getElementById(tab.dataset.section + '-section');
+                contentSections.forEach(section => section.classList.remove('active'));
+                targetSection.classList.add('active');
+            });
+        });
+
+        // Dosya yükleme işlemleri için
+        document.querySelectorAll('.drop-zone__input').forEach(inputElement => {
+            const dropZoneElement = inputElement.closest('.drop-zone');
+
+            dropZoneElement.addEventListener('click', e => {
+                inputElement.click();
+            });
+
+            inputElement.addEventListener('change', e => {
+                if (inputElement.files.length) {
+                    updateThumbnail(dropZoneElement, inputElement.files[0]);
+                }
+            });
+
+            dropZoneElement.addEventListener('dragover', e => {
+                e.preventDefault();
+                dropZoneElement.classList.add('drop-zone--over');
+            });
+
+            ['dragleave', 'dragend'].forEach(type => {
+                dropZoneElement.addEventListener(type, e => {
+                    dropZoneElement.classList.remove('drop-zone--over');
+                });
+            });
+
+            dropZoneElement.addEventListener('drop', e => {
+                e.preventDefault();
+
+                if (e.dataTransfer.files.length) {
+                    inputElement.files = e.dataTransfer.files;
+                    updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+                }
+
+                dropZoneElement.classList.remove('drop-zone--over');
+            });
+        });
+
+        function updateThumbnail(dropZoneElement, file) {
+            let thumbnailElement = dropZoneElement.querySelector('.drop-zone__thumb');
+
+            if (dropZoneElement.querySelector('.drop-zone__prompt')) {
+                dropZoneElement.querySelector('.drop-zone__prompt').remove();
+            }
+
+            if (!thumbnailElement) {
+                thumbnailElement = document.createElement('div');
+                thumbnailElement.classList.add('drop-zone__thumb');
+                dropZoneElement.appendChild(thumbnailElement);
+            }
+
+            thumbnailElement.dataset.label = file.name;
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+                };
+            }
+        }
+    });
+    </script>
+</body>
+</html> 
